@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/kcesar/trackstats/issues"
   },
-  "homepage": "https://github.com/kcesar/trackstats#readme"
+  "homepage": "https://github.com/kcesar/trackstats#readme",
+  "dependencies": {
+    "utm": "^1.1.1"
+  }
 }
