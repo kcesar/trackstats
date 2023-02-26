@@ -10,4 +10,13 @@ export default class Point {
   equals(other) {
     return this.x === other.x && this.y === other.y;
   }
+
+  static fromUtm({ easting, northing, zoneLetter }, requiredZone) {
+    if (zoneLetter !== requiredZone) {
+      throw new Error(
+        `Found point in UTM zone ${zoneLetter}, instead of ${requiredZone}`
+      );
+    }
+    return new Point(Math.round(easting), Math.round(northing));
+  }
 }

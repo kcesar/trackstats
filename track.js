@@ -1,46 +1,35 @@
 import { fromLatLon } from 'utm';
 import Line from './line.js';
+import Memo from './memo.js';
+import Point from './point.js';
 export default class Track {
   constructor({ id, geometry: { coordinates }, properties: { title } }) {
     this.id = id;
     this.title = title;
-    this.latLongPoints = coordinates;
-    this.utmPoints = null;
+    this.longLat = coordinates;
     this.utmZone = null;
-    this.utmLines = null;
+    this.cache = new Memo();
   }
 
   points() {
-    if (this.utmPoints == null) {
-      const utm = this.latLongPoints.map(([long, lat]) =>
-        fromLatLon(lat, long)
-      );
+    return this.cache.memo('points', () => {
+      const utm = this.longLat.map(([long, lat]) => fromLatLon(lat, long));
       this.utmZone = utm[0]?.zoneLetter;
-      for (const point of utm) {
-        if (point.zoneLetter !== this.utmZone) {
-          throw new Error(
-            `Track ${this.title} has points in zones ${point.zoneLetter} and ${this.utmZone}`
-          );
-        }
-      }
-      this.utmPoints = utm.map(
-        ({ easting, northing }) =>
-          new Point(Math.round(easting), Math.round(northing))
-      );
-    }
-    return this.utmPoints;
+      return utm.map((data) => Point.fromUtm(data, this.utmZone));
+    });
   }
 
   lines() {
-    if (this.utmLines == null) {
+    return this.cache.memo('lines', () => {
       const starts = this.points().slice(0, -1);
       const ends = this.points().slice(1);
-      this.utmLines = starts.map((start, i) => new Line(start, ends[i]));
-    }
-    return this.utmLines;
+      return starts.map((start, i) => new Line(start, ends[i]));
+    });
   }
 
   distance() {
-    return this.lines().reduce((acc, line) => acc + line.distance(), 0);
+    return this.cache.memo('distance', () =>
+      this.lines().reduce((acc, line) => acc + line.distance(), 0)
+    );
   }
 }
