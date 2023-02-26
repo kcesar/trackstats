@@ -11,7 +11,7 @@ export default class Track {
   }
 
   points() {
-    if (this.pointsUtm == null) {
+    if (this.utmPoints == null) {
       const utm = this.latLongPoints.map(([long, lat]) =>
         fromLatLon(lat, long)
       );
@@ -23,10 +23,10 @@ export default class Track {
           );
         }
       }
-      this.utmPoints = utm.map(({ easting, northing }) => [
-        Math.round(easting),
-        Math.round(northing),
-      ]);
+      this.utmPoints = utm.map(
+        ({ easting, northing }) =>
+          new Point(Math.round(easting), Math.round(northing))
+      );
     }
     return this.utmPoints;
   }

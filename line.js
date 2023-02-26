@@ -1,21 +1,13 @@
+import Point from './point';
 export default class Line {
-  constructor([x1, y1], [x2, y2]) {
-    this.start = [x1, y1];
-    this.end = [x2, y2];
+  constructor(start, end) {
+    this.start = start;
+    this.end = end;
   }
 
   distance() {
-    if (
-      ![...this.start, ...this.end].every(
-        (num) => typeof num === 'number' && isFinite(num)
-      )
-    ) {
-      throw new Error(
-        `Cannot calculate the distance between ${this.start} and ${this.end}`
-      );
-    }
-    const [x1, y1] = this.start;
-    const [x2, y2] = this.end;
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    return Math.sqrt(
+      (this.end.x - this.start.x) ** 2 + (this.end.y - this.start.y) ** 2
+    );
   }
 }

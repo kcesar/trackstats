@@ -1,5 +1,6 @@
 import { fromLatLon } from 'utm';
 import Line from './line.js';
+import Point from './point.js';
 export default class Polygon {
   constructor({ id, geometry: { coordinates }, properties: { title } }) {
     this.id = id;
@@ -10,7 +11,7 @@ export default class Polygon {
   }
 
   points() {
-    if (this.pointsUtm == null) {
+    if (this.utmPoints == null) {
       const utm = this.latLongPoints.map(([long, lat]) =>
         fromLatLon(lat, long)
       );
@@ -22,10 +23,10 @@ export default class Polygon {
           );
         }
       }
-      const points = utm.map(({ easting, northing }) => [
-        Math.round(easting),
-        Math.round(northing),
-      ]);
+      const points = utm.map(
+        ({ easting, northing }) =>
+          new Point(Math.round(easting), Math.round(northing))
+      );
       if (points.length > 0) {
         const first = points[0];
         const last = points[points.length - 1];
@@ -50,10 +51,7 @@ export default class Polygon {
         this.utmLines = starts
           .map((start, i) => new Line(start, ends[i]))
           // remove lines which are points
-          .filter(
-            (line) =>
-              line.start[0] !== line.end[0] || line.start[1] !== line.end[1]
-          );
+          .filter((line) => !line.start.equals(line.end));
       }
     }
     return this.utmLines;
@@ -74,10 +72,10 @@ export default class Polygon {
       const nextLine = lines[i + 1] ?? lines[0];
 
       // First, calculate the delta x & delta y for both lines
-      const lineChangeX = line.end[0] - line.start[0];
-      const lineChangeY = line.end[1] - line.start[1];
-      const nextLineChangeX = nextLine.end[0] - nextLine.start[0];
-      const nextLineChangeY = nextLine.end[1] - nextLine.start[1];
+      const lineChangeX = line.end.x - line.start.x;
+      const lineChangeY = line.end.y - line.start.y;
+      const nextLineChangeX = nextLine.end.x - nextLine.start.x;
+      const nextLineChangeY = nextLine.end.y - nextLine.start.y;
 
       // Now, calculate the matrix cross-product of these two lines:
       const cross =
