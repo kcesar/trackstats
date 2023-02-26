@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,8 @@
   "homepage": "https://github.com/kcesar/trackstats#readme",
   "dependencies": {
     "utm": "^1.1.1"
+  },
+  "devDependencies": {
+    "jest": "^29.4.3"
   }
 }
