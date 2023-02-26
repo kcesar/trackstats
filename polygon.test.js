@@ -11,6 +11,13 @@ function testPolygon(points) {
   });
 }
 
+function linesToArrays(lines) {
+  return lines.map((line) => [
+    [line.start.x, line.start.y],
+    [line.end.x, line.end.y],
+  ]);
+}
+
 test('a line is not convex', () => {
   const p = testPolygon([
     [0, 0],
@@ -82,11 +89,7 @@ test('a counter-clockwise rectangle has the correct normal lines', () => {
     [5, 10],
     [0, 10],
   ]);
-  const actual = p.normalLines().map((line) => [
-    [line.start.x, line.start.y],
-    [line.end.x, line.end.y],
-  ]);
-  expect(actual).toEqual([
+  expect(linesToArrays(p.normalLines())).toEqual([
     [
       [0, 0],
       [0, -5],
@@ -113,11 +116,7 @@ test('a clockwise rectangle has the correct normal lines', () => {
     [5, 10],
     [5, 0],
   ]);
-  const actual = p.normalLines().map((line) => [
-    [line.start.x, line.start.y],
-    [line.end.x, line.end.y],
-  ]);
-  expect(actual).toEqual([
+  expect(linesToArrays(p.normalLines())).toEqual([
     [
       [0, 0],
       [-10, 0],
@@ -133,6 +132,77 @@ test('a clockwise rectangle has the correct normal lines', () => {
     [
       [5, 0],
       [5, -5],
+    ],
+  ]);
+});
+
+test('a triangle with an extra point in the middle gets removed from lines', () => {
+  const p = testPolygon([
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [4, 0],
+    [2, 4],
+  ]);
+  expect(linesToArrays(p.lines())).toEqual([
+    [
+      [0, 0],
+      [4, 0],
+    ],
+    [
+      [4, 0],
+      [2, 4],
+    ],
+    [
+      [2, 4],
+      [0, 0],
+    ],
+  ]);
+});
+
+test('a triangle with an extra point at the wraparound between vertices gets removed from the lines', () => {
+  const p = testPolygon([
+    [2, 0],
+    [4, 0],
+    [2, 4],
+    [0, 0],
+  ]);
+  expect(linesToArrays(p.lines())).toEqual([
+    [
+      [0, 0],
+      [4, 0],
+    ],
+    [
+      [4, 0],
+      [2, 4],
+    ],
+    [
+      [2, 4],
+      [0, 0],
+    ],
+  ]);
+});
+
+test('a triangle removing the first vertex and the wraparound from the lines', () => {
+  const p = testPolygon([
+    [2, 0],
+    [3, 0],
+    [4, 0],
+    [2, 4],
+    [0, 0],
+  ]);
+  expect(linesToArrays(p.lines())).toEqual([
+    [
+      [0, 0],
+      [4, 0],
+    ],
+    [
+      [4, 0],
+      [2, 4],
+    ],
+    [
+      [2, 4],
+      [0, 0],
     ],
   ]);
 });

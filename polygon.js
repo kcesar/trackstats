@@ -57,9 +57,23 @@ export default class Polygon {
       return (
         starts
           .map((start, i) => new Line(start, ends[i]))
+          // merge together lines which have the same slope
+          .reduce((newLines, line, i, lines) => {
+            // N.B. It's possible to remove the first line
+            // so we need to grab the first _output_ line when wrapping around
+            const nextLine = lines[i + 1] ?? newLines[0];
+            if (!nextLine) {
+              newLines.push(line);
+            } else if (line.slope() === nextLine.slope()) {
+              // Merge this line into the next line, and then remove this one
+              nextLine.start = line.start;
+            } else {
+              newLines.push(line);
+            }
+            return newLines;
+          }, [])
           // remove lines which are points
           .filter((line) => !line.start.equals(line.end))
-        // todo remove points which don't change the slope
       );
     });
   }
