@@ -23,7 +23,10 @@ export default class Track {
           );
         }
       }
-      this.utmPoints = utm.map(({ easting, northing }) => [easting, northing]);
+      this.utmPoints = utm.map(({ easting, northing }) => [
+        Math.round(easting),
+        Math.round(northing),
+      ]);
     }
     return this.utmPoints;
   }
