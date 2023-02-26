@@ -74,3 +74,65 @@ test('An 4 sided shape with a divot is not convex', () => {
   ]);
   expect(p.isConvex()).toBe(false);
 });
+
+test('a counter-clockwise rectangle has the correct normal lines', () => {
+  const p = testPolygon([
+    [0, 0],
+    [5, 0],
+    [5, 10],
+    [0, 10],
+  ]);
+  const actual = p.normalLines().map((line) => [
+    [line.start.x, line.start.y],
+    [line.end.x, line.end.y],
+  ]);
+  expect(actual).toEqual([
+    [
+      [0, 0],
+      [0, -5],
+    ],
+    [
+      [5, 0],
+      [15, 0],
+    ],
+    [
+      [5, 10],
+      [5, 15],
+    ],
+    [
+      [0, 10],
+      [-10, 10],
+    ],
+  ]);
+});
+
+test('a clockwise rectangle has the correct normal lines', () => {
+  const p = testPolygon([
+    [0, 0],
+    [0, 10],
+    [5, 10],
+    [5, 0],
+  ]);
+  const actual = p.normalLines().map((line) => [
+    [line.start.x, line.start.y],
+    [line.end.x, line.end.y],
+  ]);
+  expect(actual).toEqual([
+    [
+      [0, 0],
+      [-10, 0],
+    ],
+    [
+      [0, 10],
+      [0, 15],
+    ],
+    [
+      [5, 10],
+      [15, 10],
+    ],
+    [
+      [5, 0],
+      [5, -5],
+    ],
+  ]);
+});
