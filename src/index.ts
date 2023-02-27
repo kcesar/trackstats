@@ -5,17 +5,17 @@ type GeoJSON = {
   features?: Array<TrackGeoJSON | PolygonGeoJSON>;
 };
 
-const parse = (geoJSON: GeoJSON) => {
-  return (geoJSON?.features ?? [])
-    .map((feature) => {
-      switch (feature.geometry?.type) {
-        case 'LineString':
-          return new Track(feature as TrackGeoJSON);
-        case 'Polygon':
-          return new Polygon(feature as PolygonGeoJSON);
-      }
-    })
-    .filter(Boolean);
+const parse = (
+  geoJSON: GeoJSON
+): { tracks: Array<Track>; polygons: Array<Polygon> } => {
+  const features = geoJSON?.features ?? [];
+  const tracks = features
+    .filter((feature) => feature.geometry?.type === 'LineString')
+    .map((feature) => new Track(feature as TrackGeoJSON));
+  const polygons = features
+    .filter((feature) => feature.geometry?.type === 'Polygon')
+    .map((feature) => new Polygon(feature as PolygonGeoJSON));
+  return { tracks, polygons };
 };
 
 export default parse;

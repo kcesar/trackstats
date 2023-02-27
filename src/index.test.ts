@@ -31,5 +31,5 @@ test('parse an example file', () => {
     ],
   };
   const parsed = parse(json);
-  expect(parsed[0]?.title).toEqual('T17');
+  expect(parsed.tracks[0]?.title).toEqual('T17');
 });
