@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "clean": "rm -rf ./dist",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/kcesar/trackstats/issues"
   },
-  "homepage": "https://github.com/kcesar/trackstats#readme"
+  "homepage": "https://github.com/kcesar/trackstats#readme",
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "jest": "^29.4.3",
+    "typescript": "^4.9.5"
+  }
 }

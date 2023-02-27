@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "ES2021",
+    "outDir": "dist",
+    "declaration": true,
+    "strict": true,
+    "module": "ESNext",
+    "noEmitOnError": true,
+    "lib": ["es2021"],
+    "esModuleInterop": false,
+    "types": ["node", "jest"]
+  },
+  "include": ["src"]
+}
