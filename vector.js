@@ -1,6 +1,6 @@
 import Line from './line.js';
 import Point from './point.js';
-export class Vector {
+export default class Vector {
   constructor(x, y, originalStart) {
     this.x = x;
     this.y = y;

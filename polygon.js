@@ -1,8 +1,9 @@
 import { fromLatLon } from 'utm';
+import clip from './clip.js';
 import Line from './line.js';
 import Memo from './memo.js';
 import Point from './point.js';
-import { Vector } from './vector.js';
+import Vector from './vector.js';
 export default class Polygon {
   constructor({ id, geometry: { coordinates }, properties: { title } }) {
     this.id = id;
@@ -200,5 +201,8 @@ export default class Polygon {
       }
       return normals;
     });
+  }
+  clip(track) {
+    return clip(this, track);
   }
 }

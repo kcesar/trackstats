@@ -2,6 +2,7 @@ import { fromLatLon } from 'utm';
 import Line from './line.js';
 import Memo from './memo.js';
 import Point from './point.js';
+
 export default class Track {
   constructor({ id, geometry: { coordinates }, properties: { title } }) {
     this.id = id;
@@ -9,6 +10,17 @@ export default class Track {
     this.longLat = coordinates;
     this.utmZone = null;
     this.cache = new Memo();
+  }
+
+  static fromCartesian({ id, title, points, utmZone }) {
+    const track = new Track({
+      id,
+      geometry: { coordinates: [] },
+      properties: { title },
+    });
+    track.utmZone = utmZone;
+    track.cache.memo('points', () => points);
+    return track;
   }
 
   points() {
@@ -31,5 +43,20 @@ export default class Track {
     return this.cache.memo('distance', () =>
       this.lines().reduce((acc, line) => acc + line.distance(), 0)
     );
+  }
+}
+
+export class ClippedTrack extends Track {
+  constructor(track, lines) {
+    super({
+      id: track.id,
+      geometry: { coordinates: [] },
+      properties: { title: track.title },
+    });
+    this.cache.memo('lines', () => lines);
+  }
+
+  points() {
+    throw new Error('A clipped track may be disjoint and doesnt have points');
   }
 }
