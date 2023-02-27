@@ -20,6 +20,7 @@ const template = {
       [-122.5677960035426, 48.01525535512736],
       [-122.56781746121472, 48.01525535512736],
     ],
+    type: 'LineString',
   },
 };
 
@@ -30,6 +31,7 @@ test('parses a GeoJSON track object', () => {
       [-122.5677960035426, 48.01525535512736],
       [-122.56781746121472, 48.01525535512736],
     ],
+    type: 'LineString',
   };
   const track = new Track(json);
   expect(track.points()).toEqual([
@@ -48,6 +50,7 @@ test('throws an error if tracks span multiple UTM zones', () => {
       [-122.5677960035426, 48.01525535512736],
       [-93.56781746121472, 48.01525535512736],
     ],
+    type: 'LineString',
   };
   const track = new Track(json);
   expect(() => track.points()).toThrow(TrackError);
@@ -59,6 +62,7 @@ test('throws an error if tracks span multiple UTM letters', () => {
       [-122.5677960035426, 48.01525535512736],
       [-122.56781746121472, 73.01525535512736],
     ],
+    type: 'LineString',
   };
   const track = new Track(json);
   expect(() => track.points()).toThrow(TrackError);

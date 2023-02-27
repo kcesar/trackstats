@@ -2,9 +2,9 @@ import Memo from './memo.js';
 import { fromLatLon } from 'utm';
 import { Point, Line } from 'cyrus-beck';
 
-type GeoJSON = {
+type TrackGeoJSON = {
   id: string;
-  geometry: { coordinates: Array<any> };
+  geometry: { coordinates: any; type: string };
   properties: { title: string };
 };
 
@@ -43,7 +43,7 @@ export default class Track {
     id,
     geometry: { coordinates },
     properties: { title } = { title: '' },
-  }: GeoJSON) {
+  }: TrackGeoJSON) {
     this.id = id;
     this.title = title;
     this.longLat = coordinates;
@@ -74,4 +74,4 @@ export default class Track {
     );
   }
 }
-export { TrackError };
+export { TrackError, TrackGeoJSON };
