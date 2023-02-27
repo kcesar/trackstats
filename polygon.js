@@ -2,6 +2,7 @@ import { fromLatLon } from 'utm';
 import Line from './line.js';
 import Memo from './memo.js';
 import Point from './point.js';
+import { Vector } from './vector.js';
 export default class Polygon {
   constructor({ id, geometry: { coordinates }, properties: { title } }) {
     this.id = id;
@@ -88,20 +89,9 @@ export default class Polygon {
 
       let requiredCardinality = null;
       for (let i = 0; i < lines.length; i += 1) {
-        const line = lines[i];
-        // The algorithm works by comparing two adjacent lines at a time. The very last comparison
-        // needs to take the last line & the first line
-        const nextLine = lines[i + 1] ?? lines[0];
-
-        // First, calculate the delta x & delta y for both lines
-        const lineChangeX = line.end.x - line.start.x;
-        const lineChangeY = line.end.y - line.start.y;
-        const nextLineChangeX = nextLine.end.x - nextLine.start.x;
-        const nextLineChangeY = nextLine.end.y - nextLine.start.y;
-
-        // Now, calculate the matrix cross-product of these two lines:
-        const cross =
-          lineChangeX * nextLineChangeY - lineChangeY * nextLineChangeX;
+        const lineVector = Vector.fromLine(lines[i]);
+        const nextLineVector = Vector.fromLine(lines[i + 1] ?? lines[0]);
+        const cross = lineVector.crossProduct(nextLineVector);
         const cardinality = cross > 0;
 
         // Convex polxygons all have the same z-product cardinality (e.g all positive cross products or all negative)
@@ -172,33 +162,27 @@ export default class Polygon {
 
         // 1. Vectorize everything. In our new world, Point A = (0,0) and then all of our other calculations are now just vectors from this point.
         // Translate the line down to (0,0) by subtracting start.x and start.y from both points
-        const lineVector = new Line(
-          new Point(0, 0),
-          new Point(line.end.x - line.start.x, line.end.y - line.start.y)
-        );
+        const lineVector = Vector.fromLine(line);
         // 2. Create the 90 degree vector using the formula (-end.y, end.x) per the math above
-        const possibleNormal = new Line(
-          new Point(0, 0),
-          new Point(-lineVector.end.y, lineVector.end.x)
+        const possibleNormal = new Vector(
+          -lineVector.y,
+          lineVector.x,
+          lineVector.originalStart
         );
         // 2a. Create the 270 degree normal vector using the (end.y, -end.x) formula
-        const alternativeNormal = new Line(
-          new Point(0, 0),
-          new Point(lineVector.end.y, -lineVector.end.x)
+        const alternativeNormal = new Vector(
+          lineVector.y,
+          -lineVector.x,
+          lineVector.originalStart
         );
         // 3. Create the reference vector A-->C
-        const furtherInsideVector = new Line(
-          new Point(0, 0),
-          new Point(
-            nextLine.end.x - line.start.x,
-            nextLine.end.y - line.start.y
-          )
+        const furtherInsideVector = new Vector(
+          nextLine.end.x - lineVector.originalStart.x,
+          nextLine.end.y - lineVector.originalStart.y,
+          lineVector.originalStart
         );
         // 4. Calculate the inner product (dot product for euclidean space) of these two vectors e.g (x1 * x2) + (y1 * y2)
-        const innerProduct =
-          possibleNormal.end.x * furtherInsideVector.end.x +
-          possibleNormal.end.y * furtherInsideVector.end.y;
-
+        const innerProduct = possibleNormal.dotProduct(furtherInsideVector);
         // Since the dot product = length of vectors * cos() of the angle between them
 
         if (innerProduct === 0) {
@@ -212,14 +196,7 @@ export default class Polygon {
           innerProduct < 0 ? possibleNormal : alternativeNormal;
 
         // 6. translate the vector back to the the original location and turn it back to a line
-        const normal = new Line(
-          new Point(line.start.x, line.start.y),
-          new Point(
-            normalVector.end.x + line.start.x,
-            normalVector.end.y + line.start.y
-          )
-        );
-        normals.push(normal);
+        normals.push(normalVector.toLine());
       }
       return normals;
     });
