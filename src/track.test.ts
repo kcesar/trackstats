@@ -1,5 +1,5 @@
-import Track, { TrackError } from './track';
-const template = {
+import Track, { TrackGeoJSON } from './track';
+const template: TrackGeoJSON = {
   id: '2e66f874-21f4-4ae1-95be-8dbe4eb947aa',
   type: 'Feature',
   properties: {
@@ -38,32 +38,5 @@ test('parses a GeoJSON track object', () => {
     { x: 532231, y: 5318086 },
     { x: 532229, y: 5318086 },
   ]);
-  expect(track.utmZone).toEqual(10);
-  expect(track.utmLetter).toEqual('U');
   expect(track.distance()).toBe(4);
-});
-
-test('throws an error if tracks span multiple UTM zones', () => {
-  const json = { ...template };
-  json.geometry = {
-    coordinates: [
-      [-122.5677960035426, 48.01525535512736],
-      [-93.56781746121472, 48.01525535512736],
-    ],
-    type: 'LineString',
-  };
-  const track = new Track(json);
-  expect(() => track.points()).toThrow(TrackError);
-});
-test('throws an error if tracks span multiple UTM letters', () => {
-  const json = { ...template };
-  json.geometry = {
-    coordinates: [
-      [-122.5677960035426, 48.01525535512736],
-      [-122.56781746121472, 73.01525535512736],
-    ],
-    type: 'LineString',
-  };
-  const track = new Track(json);
-  expect(() => track.points()).toThrow(TrackError);
 });

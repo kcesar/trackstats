@@ -1,6 +1,10 @@
 import parse from './index.js';
 
 test('parse an example file', () => {
+  const coordinates: Array<[number, number]> = [
+    [-122.5677960035426, 48.01525535512736],
+    [-122.56781746121472, 48.01525535512736],
+  ];
   const json = {
     features: [
       {
@@ -20,10 +24,7 @@ test('parse an example file', () => {
           folderId: '0f50df2f-6b44-493b-836c-6017614c19f9',
         },
         geometry: {
-          coordinates: [
-            [-122.5677960035426, 48.01525535512736],
-            [-122.56781746121472, 48.01525535512736],
-          ],
+          coordinates,
           type: 'LineString',
         },
       },
